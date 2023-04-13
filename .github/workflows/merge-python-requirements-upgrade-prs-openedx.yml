@@ -1,10 +1,10 @@
 # This file contains a workflow which will be run on schedule every day, and
 # will collect all the eligible (PRs which are labelled "Ready to merge" by our 
-# script) python upgrade PRs from both edx and openedx orgs.
+# script) python upgrade PRs from openedx org.
 # After fetching all PRs, it will check if all the checks passing on the PR, if yes
 # then it will merge that PR, otherwise it will fail.
 
-name: Merge Python Requirements Upgrade PRs
+name: Merge Python Requirements Upgrade PRs for OPENEDX Organization
 
 on:
   schedule:
@@ -36,12 +36,18 @@ jobs:
           GIT_TOKEN: ${{ secrets.requirements_bot_github_token }}
         id: generate_urls
         run: |
-          echo "urls=$(python scripts/get_ready_to_merge_prs.py)" >> $GITHUB_OUTPUT
+          echo "urls=$(python scripts/get_ready_to_merge_prs.py openedx)" >> $GITHUB_OUTPUT
 
   merge_pr:
     runs-on: ubuntu-20.04
     needs:
       - get_list_of_prs
+    - name: Check if URLs are present
+      if: needs.get_list_of_prs.outputs.urls | length == 0 # Add this line to check if the urls output is empty
+      steps:
+        - name: No Ready to Merge PR
+          run: echo "No URLs found, stopping workflow"
+          exit 1 # Exit with an error code to stop the workflow
     strategy:
       fail-fast: false
       matrix:
