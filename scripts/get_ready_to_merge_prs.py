@@ -28,12 +28,11 @@ def get_ready_to_merge_prs(org: str):
     Returns:
             list of all prs.
     """
-    # token = os.environ.get('GIT_TOKEN')
-    # if not token:
-    #     LOG.error('GIT_TOKEN is missing from environment variables')
-    #     sys.exit(1)
-    urls = get_github_api_response(org, "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")
-    breakpoint()
+    token = os.environ.get('GIT_TOKEN')
+    if not token:
+        LOG.error('GIT_TOKEN is missing from environment variables')
+        sys.exit(1)
+    urls = get_github_api_response(org, token)
     print(json.dumps(urls))
     return urls
 
