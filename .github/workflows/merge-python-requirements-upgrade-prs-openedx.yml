@@ -4,7 +4,7 @@
 # After fetching all PRs, it will check if all the checks passing on the PR, if yes
 # then it will merge that PR, otherwise it will fail.
 
-name: Merge Python Requirements Upgrade PRs for OPENEDX Organization
+name: Merge Python Requirements Upgrade PRs for OPENEDX org
 
 on:
   schedule:
@@ -42,12 +42,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - get_list_of_prs
-    - name: Check if URLs are present
-      if: needs.get_list_of_prs.outputs.urls | length == 0 # Add this line to check if the urls output is empty
-      steps:
-        - name: No Ready to Merge PR
-          run: echo "No URLs found, stopping workflow"
-          exit 1 # Exit with an error code to stop the workflow
+    if: needs.get_list_of_prs.outputs.urls | length != 0 # Skip if there are no URLs found
     strategy:
       fail-fast: false
       matrix:
