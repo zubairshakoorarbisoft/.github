@@ -42,18 +42,19 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - get_list_of_prs
-    - name: Check if URLs are present
-      if: needs.get_list_of_prs.outputs.urls | length == 0 # Add this line to check if the urls output is empty
-      steps:
-        - name: No Ready to Merge PR
-          run: echo "No URLs found, stopping workflow"
-          exit 1 # Exit with an error code to stop the workflow
     strategy:
       fail-fast: false
       matrix:
         url: ${{ fromJSON(needs.get_list_of_prs.outputs.urls) }}
 
     steps:
+      - name: Check if URLs are present
+        if: needs.get_list_of_prs.outputs.urls | length == 0 # Add this line to check if the urls output is empty
+        steps:
+          - name: No Ready to Merge PR
+            run: echo "No URLs found, stopping workflow"
+          exit 1 # Exit with an error code to stop the workflow
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
