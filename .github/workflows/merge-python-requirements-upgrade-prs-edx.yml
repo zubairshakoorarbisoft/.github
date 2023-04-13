@@ -36,13 +36,12 @@ jobs:
           GIT_TOKEN: ${{ secrets.requirements_bot_github_token }}
         id: generate_urls
         run: |
-          echo "urls=$(python scripts/get_ready_to_merge_prs.py edx)" >> $GITHUB_ENV
+          echo "urls=$(python scripts/get_ready_to_merge_prs.py edx)" >> $GITHUB_OUTPUT
 
   merge_pr:
     runs-on: ubuntu-20.04
     needs:
       - get_list_of_prs
-    if: needs.get_list_of_prs.outputs.urls | length != 0 # Skip if there are no URLs found
     strategy:
       fail-fast: false
       matrix:
