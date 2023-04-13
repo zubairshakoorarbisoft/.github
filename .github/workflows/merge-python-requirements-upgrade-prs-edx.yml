@@ -4,7 +4,7 @@
 # After fetching all PRs, it will check if all the checks passing on the PR, if yes
 # then it will merge that PR, otherwise it will fail.
 
-name: Merge Python Requirements Upgrade PRs for EDX Organization
+name: Merge Python Requirements Upgrade PRs for EDX org
 
 on:
   schedule:
@@ -42,7 +42,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - get_list_of_prs
-    if: needs.get_list_of_prs.outputs.urls | length != 0 # Skip if there are no URLs found
     strategy:
       fail-fast: false
       matrix:
