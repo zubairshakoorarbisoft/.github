@@ -9,6 +9,10 @@ name: Merge Python Requirements Upgrade PRs
 
 on:
   workflow_call:
+    secrets:
+      REQUIREMENTS_BOT_GITHUB_TOKEN: 
+        description: "Github token with read access to all repos and write access to the target repo"
+        required: true
     inputs:
       ORG_NAME:
         description: "Organisation name to merge PRs for, default openedx"
@@ -46,7 +50,7 @@ jobs:
 
       - name: Get urls of all eligible prs
         env:
-          GIT_TOKEN: ${{ secrets.requirements_bot_github_token }}
+          GIT_TOKEN: ${{ secrets.REQUIREMENTS_BOT_GITHUB_TOKEN }}
         id: generate_urls
         run: |
           echo "urls=$(python scripts/get_ready_to_merge_prs.py ${{ inputs.ORG_NAME || 'openedx' }})" >> $GITHUB_OUTPUT
