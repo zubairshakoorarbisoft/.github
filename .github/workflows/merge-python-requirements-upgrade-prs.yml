@@ -45,13 +45,14 @@ jobs:
         run: |
           echo "urls=$(python scripts/get_ready_to_merge_prs.py openedx)" >> $GITHUB_OUTPUT
       - name: Print URLs
-        run: echo ${{ needs.get_list_of_prs.outputs.urls }}
+        run: |
+          echo "$(python scripts/get_ready_to_merge_prs.py openedx)"
 
   merge_pr:
     runs-on: ubuntu-20.04
     needs:
       - get_list_of_prs
-    if: needs.get_list_of_prs.outputs.urls # Skip if there are no URLs found
+    if: needs.get_list_of_prs.outputs.urls != '[]' # Skip if there are no URLs found
     strategy:
       fail-fast: false
       matrix:
