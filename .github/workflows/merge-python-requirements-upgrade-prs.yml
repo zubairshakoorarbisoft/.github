@@ -39,6 +39,11 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      - name: Download script file
+        run: |
+          mkdir -p scripts
+          curl -o scripts/get_ready_to_merge_prs.py https://raw.githubusercontent.com/zubairshakoorarbisoft/.github/master/scripts/get_ready_to_merge_prs.py
+
       - name: Get urls of all eligible prs
         env:
           GIT_TOKEN: ${{ secrets.requirements_bot_github_token }}
