@@ -45,7 +45,7 @@ jobs:
         run: |
           echo "urls=$(python scripts/get_ready_to_merge_prs.py openedx)" >> $GITHUB_OUTPUT
       - name: Print URLs
-        run: echo ${{ steps.generate_urls.outputs.urls }}
+        run: echo ${{ needs.get_list_of_prs.outputs.urls }}
 
   merge_pr:
     runs-on: ubuntu-20.04
