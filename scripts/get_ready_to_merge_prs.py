@@ -34,7 +34,7 @@ def get_ready_to_merge_prs(org: str):
         sys.exit(1)
     urls = get_github_api_response(org, token)
     print(json.dumps(urls))
-    return urls
+    return ['urls']
 
 
 def get_github_api_response(org, token):
