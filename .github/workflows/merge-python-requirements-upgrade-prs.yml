@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - get_list_of_prs
-    if: needs.get_list_of_prs.outputs.urls != '[]' # Skip if there are no URLs found
+    if: ${{ length(needs.get_list_of_prs.outputs.urls) > 0 }} # Skip if there are no URLs found
     strategy:
       fail-fast: false
       matrix:
