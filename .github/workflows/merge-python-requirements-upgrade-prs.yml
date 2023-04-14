@@ -8,17 +8,24 @@
 name: Merge Python Requirements Upgrade PRs
 
 on:
-  schedule:
-    # will run the job at 10 AM every day (UTC),
-    # https://crontab.guru/#0_10_*_*_*
-    - cron: "0 10 * * *"
   workflow_call:
+    secrets:
+      REQUIREMENTS_BOT_GITHUB_TOKEN: 
+        description: "Github token with read access to all repos and write access to the target repo"
+        required: true
     inputs:
       ORG_NAME:
         description: "Organisation name to merge PRs for, default openedx"
         type: string
-        default: "openedx"
+        required: true
+
+  schedule:
+    # will run the job at 10 AM every day (UTC),
+    # https://crontab.guru/#0_10_*_*_*
+    - cron: "0 10 * * *"
+
   workflow_dispatch:
+
 
 jobs:
   get_list_of_prs:
@@ -38,18 +45,24 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      - name: Download script file
+        run: |
+          mkdir -p scripts
+          curl -o scripts/get_ready_to_merge_prs.py https://raw.githubusercontent.com/openedx/.github/master/scripts/get_ready_to_merge_prs.py
+
       - name: Get urls of all eligible prs
         env:
-          GIT_TOKEN: ${{ secrets.requirements_bot_github_token }}
+          GIT_TOKEN: ${{ secrets.REQUIREMENTS_BOT_GITHUB_TOKEN }}
         id: generate_urls
         run: |
-          echo "urls=$(python scripts/get_ready_to_merge_prs.py ${{ inputs.ORG_NAME }})" >> $GITHUB_OUTPUT
+          echo "urls=$(python scripts/get_ready_to_merge_prs.py ${{ inputs.ORG_NAME || 'openedx' }})" >> $GITHUB_OUTPUT
+          
 
   merge_pr:
     runs-on: ubuntu-20.04
     needs:
       - get_list_of_prs
-    if: needs.get_list_of_prs.outputs.urls | length != 0 # Skip if there are no URLs found
+    if: needs.get_list_of_prs.outputs.urls != '[]' # Skip if there are no URLs found
     strategy:
       fail-fast: false
       matrix:
@@ -71,35 +84,29 @@ jobs:
         run: |
           cd tubular
           pip install -e .
-
       - name: Extract parameters from URL
         run: |
           url="${{ matrix.url }}"
-
           # Extract the parameters
           org_name=$(echo $url | awk -F/ '{print $4}')
           repo_name=$(echo $url | awk -F/ '{print $5}')
           pr_number=$(echo $url | awk -F/ '{print $7}')
-
           # store for next steps
           echo "org_name=${org_name}" >> $GITHUB_ENV
           echo "repo_name=${repo_name}" >> $GITHUB_ENV
           echo "pr_number=${pr_number}" >> $GITHUB_ENV
-
           #print out
           echo "Organization: $org_name"
           echo "Repo: $repo_name"
           echo "PR: $pr_number"
-
       - name: Check test status of pr
         env:
-          GIT_TOKEN: ${{ secrets.requirements_bot_github_token }}
+          GIT_TOKEN: ${{ secrets.REQUIREMENTS_BOT_GITHUB_TOKEN }}
         run: |
           check_pr_tests_status.py --org "${{ env.org_name }}" --repo "${{ env.repo_name }}" --pr_number \
           "${{ env.pr_number }}" --exclude-contexts 'Renovate|[Cc]odecov|Dependabot|edx-platform-ci' --all-checks
-
       - name: Merge pull request
         env:
-          GIT_TOKEN: ${{ secrets.requirements_bot_github_token }}
+          GIT_TOKEN: ${{ secrets.REQUIREMENTS_BOT_GITHUB_TOKEN }}
         run: |
           merge_pr.py --org "${{ env.org_name }}" --repo "${{ env.repo_name }}" --pr_number "${{ env.pr_number }}"
