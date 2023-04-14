@@ -43,9 +43,8 @@ jobs:
           GIT_TOKEN: ${{ secrets.requirements_bot_github_token }}
         id: generate_urls
         run: |
-          ORG_NAME=${{ inputs.ORG_NAME:-openedx }}
-          echo "urls=$(python scripts/get_ready_to_merge_prs.py $ORG_NAME)" >> $GITHUB_OUTPUT
-
+          echo "urls=$(python scripts/get_ready_to_merge_prs.py ${{ inputs.ORG_NAME || 'openedx' }})" >> $GITHUB_OUTPUT
+          
 
   merge_pr:
     runs-on: ubuntu-20.04
