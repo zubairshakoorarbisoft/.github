@@ -33,8 +33,9 @@ def get_ready_to_merge_prs(org: str):
         LOG.error('GIT_TOKEN is missing from environment variables')
         sys.exit(1)
     urls = get_github_api_response(org, token)
+    urls = ['https://github.com/openedx/edx-platform/pull/32058']
     print(json.dumps(urls))
-    return ['urls']
+    return urls
 
 
 def get_github_api_response(org, token):
