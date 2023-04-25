@@ -83,4 +83,4 @@ if __name__ == "__main__":
             sys.exit(1)
         get_ready_to_merge_prs(org)
     else:
-        print("organization name edx or openedx is required")
+        print(f"{', '.join(ORGS)} are vallid organizations")
