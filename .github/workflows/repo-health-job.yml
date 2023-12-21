@@ -122,16 +122,6 @@ jobs:
         run: |
           bash edx-repo-health/scripts/repo-health-script.sh
 
-      - name: Run repo health artifact script
-        run: |
-          bash edx-repo-health/scripts/repo-health-artifact.sh
-      
-      - name: Upload sqlite db as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sqlite db artifact
-          path: dashboards/dashboard.sqlite3
-
       - name: Run dependencies health dashboard script
         if: ${{ inputs.DASHBOARD_NAME == 'dependencies_health' }}
         env:
@@ -142,3 +132,14 @@ jobs:
           ONLY_CHECK_THIS_REPOSITORY: ${{ inputs.ONLY_CHECK_THIS_REPOSITORY }}
         run: |
           bash edx-repo-health/scripts/dependencies-health-script.sh
+
+      - name: Run repo health artifact script
+        run: |
+          bash edx-repo-health/scripts/repo-health-artifact.sh
+        
+      - name: Upload sqlite db as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlite db artifact
+          path: dashboards/dashboard.sqlite3
+  
