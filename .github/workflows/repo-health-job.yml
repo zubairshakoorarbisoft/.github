@@ -141,5 +141,4 @@ jobs:
           EDX_REPO_HEALTH_BRANCH: ${{ inputs.EDX_REPO_HEALTH_BRANCH }}
           ONLY_CHECK_THIS_REPOSITORY: ${{ inputs.ONLY_CHECK_THIS_REPOSITORY }}
         run: |
-          chmod +x edx-repo-health/scripts/dependencies-health-script.sh
           bash edx-repo-health/scripts/dependencies-health-script.sh
