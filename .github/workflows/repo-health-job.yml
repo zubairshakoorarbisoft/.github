@@ -134,10 +134,12 @@ jobs:
           bash edx-repo-health/scripts/dependencies-health-script.sh
 
       - name: Run repo health artifact script
+        if: ${{ inputs.DASHBOARD_NAME == 'repo_health' }}
         run: |
           bash edx-repo-health/scripts/repo-health-artifact.sh
         
       - name: Upload sqlite db as artifact
+        if: ${{ inputs.DASHBOARD_NAME == 'repo_health' }}
         uses: actions/upload-artifact@v4
         with:
           name: sqlite db artifact
